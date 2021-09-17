@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class FlutterChatModel extends Model {
-  BuildContext? rootBuildContext;
+  late BuildContext rootBuildContext;
 
   Directory? docsDir;
 
@@ -115,7 +115,7 @@ class FlutterChatModel extends Model {
     notifyListeners();
   }
 
-  void addRoomInvitte(final String inRoomName) {
+  void addRoomInvite(final String inRoomName) {
     roomInvites[inRoomName] = true;
   }
 
@@ -126,6 +126,6 @@ class FlutterChatModel extends Model {
   void clearCurrentRoomMessages() {
     currentRoomMessages.clear();
   }
-
-  FlutterChatModel flutterChatModel = FlutterChatModel();
 }
+
+FlutterChatModel flutterChatModel = FlutterChatModel();
