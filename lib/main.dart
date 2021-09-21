@@ -9,8 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-var exists;
-var credentials;
+dynamic exists;
+dynamic credentials;
 void main() {
   startMeUp() async {
     Directory docsDir = await getApplicationDocumentsDirectory();
