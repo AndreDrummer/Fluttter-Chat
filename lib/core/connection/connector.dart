@@ -62,10 +62,7 @@ void hidePleaseWait() {
   Navigator.of(flutterChatModel.rootBuildContext).pop();
 }
 
-void connectToServer({
-  required BuildContext inMainBuildContext,
-  required Function inCallback,
-}) {
+void connectToServer(final Function inCallback) {
   _io = SocketIOManager().createSocketIO(serverURL, '/', query: '',
       socketStatusCallback: (inData) {
     if (inData == 'connect') {

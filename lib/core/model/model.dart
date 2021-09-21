@@ -10,7 +10,7 @@ class FlutterChatModel extends Model {
 
   String greeting = '';
 
-  String userName = '';
+  String? userName = '';
 
   static const String defaultRoomName = 'Not currenctly in a room';
 
@@ -37,7 +37,7 @@ class FlutterChatModel extends Model {
     notifyListeners();
   }
 
-  void setUserName(final String inUserName) {
+  void setUserName(final String? inUserName) {
     debugPrint('## FlutterChatModel.setUserName(): inUserName = $inUserName');
 
     userName = inUserName;
