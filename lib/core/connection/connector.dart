@@ -5,7 +5,7 @@ import 'package:flutter_chat/core/model/model.dart';
 import 'package:flutter_socket_io/flutter_socket_io.dart';
 import 'package:flutter_socket_io/socket_io_manager.dart';
 
-String serverURL = 'http: 1192.168.1.32';
+String serverURL = 'http://127.0.0.1:8080';
 
 late SocketIO _io;
 
@@ -77,6 +77,19 @@ void connectToServer(final Function inCallback) {
       inCallback();
     }
   });
+
+  _io.destroy();
+  _io = SocketIOManager().createSocketIO(
+    serverURL,
+    "/",
+    query: "",
+    socketStatusCallback: (inData) {
+      if (inData == "connect") {
+        inCallback();
+      }
+    },
+  );
+
   _io.init();
   _io.connect();
 }

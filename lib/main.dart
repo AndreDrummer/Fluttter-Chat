@@ -12,12 +12,14 @@ import 'package:scoped_model/scoped_model.dart';
 dynamic exists;
 dynamic credentials;
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   startMeUp() async {
     Directory docsDir = await getApplicationDocumentsDirectory();
     flutterChatModel.docsDir = docsDir;
 
     var credentialsFile = File(
-      join(flutterChatModel.docsDir!.path, "credentials"),
+      join(flutterChatModel.docsDir!.path, "credentils"),
     );
 
     exists = await credentialsFile.exists();
@@ -25,9 +27,10 @@ void main() {
     if (exists) {
       credentials = await credentialsFile.readAsString();
     }
+
+    runApp(const FlutterChat());
   }
 
-  runApp(const FlutterChat());
   startMeUp();
 }
 
