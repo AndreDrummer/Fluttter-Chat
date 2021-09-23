@@ -44,7 +44,6 @@ class FlutterChat extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      routes: AppRoutes.routes,
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
         body: FlutterChatMain(),
@@ -66,7 +65,11 @@ class FlutterChatMain extends StatelessWidget {
       model: flutterChatModel,
       child: ScopedModelDescendant<FlutterChatModel>(
         builder: (context, child, model) {
-          return const Home();
+          return MaterialApp(
+            routes: AppRoutes.routes,
+            debugShowCheckedModeBanner: false,
+            home: const Home(),
+          );
         },
       ),
     );
