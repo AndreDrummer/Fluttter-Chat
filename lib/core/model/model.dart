@@ -78,6 +78,8 @@ class FlutterChatModel extends Model {
   }
 
   void setRoomList(final Map inRoomList) {
+    debugPrint("## FlutterChatModel.setRoomList(): inRoomList = $inRoomList");
+
     List rooms = [];
     for (String roomName in inRoomList.keys) {
       Map room = inRoomList[roomName];

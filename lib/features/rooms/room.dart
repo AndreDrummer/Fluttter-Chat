@@ -115,9 +115,7 @@ class _RoomState extends State<Room> {
                               List<Widget> userList = [];
                               for (var user
                                   in flutterChatModel.currentRoomUserList) {
-                                userList.add(
-                                  Text(user['userName']),
-                                );
+                                userList.add(Text(user['userName']));
                               }
                               return Column(children: userList);
                             },
@@ -174,12 +172,15 @@ class _RoomState extends State<Room> {
                               inCallback: (inStatus) {
                                 debugPrint(
                                     'Room.post callback: inStatus = $inStatus');
-                                if (inStatus == 'ok') {
+                                if (inStatus == 'OK') {
                                   flutterChatModel.addMessage(
-                                      '${flutterChatModel.userName}',
-                                      _postMessage);
+                                    '${flutterChatModel.userName}',
+                                    _postMessage,
+                                  );
                                   _controller.jumpTo(
-                                      _controller.position.maxScrollExtent);
+                                    _controller.position.maxScrollExtent,
+                                  );
+                                  _postEditingController.clear();
                                 }
                               },
                             );

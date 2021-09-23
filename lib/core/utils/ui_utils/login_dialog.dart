@@ -23,51 +23,53 @@ class LoginDialog extends StatelessWidget {
               height: 220,
               child: Form(
                 key: _loginFormKey,
-                child: Column(
-                  children: [
-                    Text(
-                      'Enter a username and password to register with the server',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(flutterChatModel.rootBuildContext)
-                            .secondaryHeaderColor,
-                        fontSize: 18,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Enter a username and password to register with the server',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(flutterChatModel.rootBuildContext)
+                              .primaryColor,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      validator: (inValue) {
-                        if (inValue != null && inValue.isEmpty ||
-                            inValue!.length > 10) {
-                          return 'Please enter a username no more than 10 characters long';
-                        }
-                        return null;
-                      },
-                      onSaved: (inValue) {
-                        _userName = inValue!;
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Username',
-                        labelText: 'Username',
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        validator: (inValue) {
+                          if (inValue != null && inValue.isEmpty ||
+                              inValue!.length > 10) {
+                            return 'Please enter a username no more than 10 characters long';
+                          }
+                          return null;
+                        },
+                        onSaved: (inValue) {
+                          _userName = inValue!;
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Username',
+                          labelText: 'Username',
+                        ),
                       ),
-                    ),
-                    TextFormField(
-                      obscureText: true,
-                      validator: (inValue) {
-                        if (inValue != null && inValue.isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        return null;
-                      },
-                      onSaved: (inValue) {
-                        _password = inValue!;
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Password',
-                        labelText: 'Password',
-                      ),
-                    )
-                  ],
+                      TextFormField(
+                        obscureText: true,
+                        validator: (inValue) {
+                          if (inValue != null && inValue.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          return null;
+                        },
+                        onSaved: (inValue) {
+                          _password = inValue!;
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Password',
+                          labelText: 'Password',
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -83,13 +85,13 @@ class LoginDialog extends StatelessWidget {
                           inUserName: _userName,
                           inPassword: _password,
                           inCallback: (inStatus) async {
-                            if (inStatus == 'ok') {
+                            if (inStatus == 'OK') {
                               flutterChatModel.setUserName(_userName);
                               Navigator.of(flutterChatModel.rootBuildContext)
                                   .pop();
                               flutterChatModel
                                   .setGreeting('Welcome back, $_userName!');
-                            } else if (inStatus == 'fail') {
+                            } else if (inStatus == 'Fail') {
                               ScaffoldMessenger.of(
                                       flutterChatModel.rootBuildContext)
                                   .showSnackBar(
@@ -100,7 +102,7 @@ class LoginDialog extends StatelessWidget {
                                       'Sorry, that username is already taken'),
                                 ),
                               );
-                            } else if (inStatus == 'created') {
+                            } else if (inStatus == 'Created') {
                               var credentialsFile = File(
                                 join(
                                   flutterChatModel.docsDir!.path,
@@ -139,10 +141,10 @@ class LoginDialog extends StatelessWidget {
           inUserName: inUserName,
           inPassword: inPassword,
           inCallback: (inStatus) {
-            if (inStatus == 'ok' || inStatus == 'created') {
+            if (inStatus == 'OK' || inStatus == 'created') {
               flutterChatModel.setUserName(inUserName);
               flutterChatModel.setGreeting('Welcome back, $inUserName!');
-            } else if (inStatus == 'fail') {
+            } else if (inStatus == 'Fail') {
               showDialog(
                 context: flutterChatModel.rootBuildContext,
                 barrierDismissible: false,
@@ -154,7 +156,7 @@ class LoginDialog extends StatelessWidget {
                   ),
                   actions: [
                     TextButton(
-                      child: const Text('Ok'),
+                      child: const Text('OK'),
                       onPressed: () {
                         var credentialsFile = File(
                           join(

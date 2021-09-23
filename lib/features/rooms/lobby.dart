@@ -64,7 +64,7 @@ class Lobby extends StatelessWidget {
                                   inUserName: '${flutterChatModel.userName}',
                                   inRoomName: roomName,
                                   inCallback: (inStatus, inRoomDescriptor) {
-                                    if (inStatus == 'joined') {
+                                    if (inStatus == 'Joined') {
                                       flutterChatModel.setCurrentRoomName(
                                         inRoomDescriptor['roomName'],
                                       );

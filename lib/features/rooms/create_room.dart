@@ -56,7 +56,7 @@ class _CreateRoomState extends State<CreateRoom> {
                           inPrivate: _private,
                           inCreator: '${flutterChatModel.userName}',
                           inCallback: (inStatus, inRoomList) {
-                            if (inStatus == 'created') {
+                            if (inStatus == 'Created') {
                               flutterChatModel.setRoomList(inRoomList);
                               FocusScope.of(inContext)
                                   .requestFocus(FocusNode());

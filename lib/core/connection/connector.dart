@@ -2,12 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/core/model/model.dart';
-import 'package:flutter_socket_io/flutter_socket_io.dart';
-import 'package:flutter_socket_io/socket_io_manager.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
-String serverURL = 'http://127.0.0.1:8080';
+const String serverURL = 'http://192.168.100.5:3000';
 
-late SocketIO _io;
+late Socket socket;
 
 void showPleaseWait() {
   debugPrint('## Connector.showPleaseWait()');
@@ -63,35 +62,26 @@ void hidePleaseWait() {
 }
 
 void connectToServer(final Function inCallback) {
-  _io = SocketIOManager().createSocketIO(serverURL, '/', query: '',
-      socketStatusCallback: (inData) {
-    if (inData == 'connect') {
-      _io.subscribe('newUser', newUser);
-      _io.subscribe('created', created);
-      _io.subscribe('closed', closed);
-      _io.subscribe('joined', joined);
-      _io.subscribe('left', left);
-      _io.subscribe('kicked', kicked);
-      _io.subscribe('invited', invited);
-      _io.subscribe('posted', posted);
-      inCallback();
-    }
-  });
+  try {
+    socket = io(serverURL, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false
+    });
 
-  _io.destroy();
-  _io = SocketIOManager().createSocketIO(
-    serverURL,
-    "/",
-    query: "",
-    socketStatusCallback: (inData) {
-      if (inData == "connect") {
-        inCallback();
-      }
-    },
-  );
+    socket.connect();
 
-  _io.init();
-  _io.connect();
+    socket.on('newUser', newUser);
+    socket.on('created', created);
+    socket.on('closed', closed);
+    socket.on('joined', joined);
+    socket.on('left', left);
+    socket.on('kicked', kicked);
+    socket.on('invited', invited);
+    socket.on('posted', posted);
+    inCallback();
+  } on Exception catch (exception) {
+    debugPrint(exception.toString());
+  }
 }
 
 void validate({
@@ -100,21 +90,20 @@ void validate({
   required String inPassword,
 }) {
   showPleaseWait();
-  _io.sendMessage(
-      'validate', '''{ 'username': $inUserName, 'password': $inPassword }''',
-      (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('validate', {
+    'userName': inUserName,
+    'password': inPassword,
+  }, ack: (inData) {
     hidePleaseWait();
-    inCallback(response['status']);
+    inCallback(inData['status']);
   });
 }
 
 void listRooms(final Function inCallback) {
   showPleaseWait();
-  _io.sendMessage('listRooms', '{}', (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('listRooms', '{}', ack: (inData) {
     hidePleaseWait();
-    inCallback(response['status']);
+    inCallback(inData);
   });
 }
 
@@ -127,12 +116,15 @@ void create({
   required bool inPrivate,
 }) {
   showPleaseWait();
-  _io.sendMessage('create',
-      '''{ 'roomName': $inRoomName, 'description': $inDescription, 'maxPeople': $inMaxPeople, 'private': $inPrivate, 'creator': $inCreator }''',
-      (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('create', {
+    'roomName': inRoomName,
+    'description': inDescription,
+    'maxPeople': inMaxPeople,
+    'private': inPrivate,
+    'creator': inCreator
+  }, ack: (inData) {
     hidePleaseWait();
-    inCallback(response['status'], response['rooms']);
+    inCallback(inData['status'], inData['rooms']);
   });
 }
 
@@ -142,12 +134,12 @@ void join({
   required String inRoomName,
 }) {
   showPleaseWait();
-  _io.sendMessage(
-      'join', '''{ 'userName': $inUserName, 'roomName': $inRoomName }''',
-      (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('join', {
+    'userName': inUserName,
+    'roomName': inRoomName,
+  }, ack: (inData) {
     hidePleaseWait();
-    inCallback(response['status'], response['room']);
+    inCallback(inData['status'], inData['room']);
   });
 }
 
@@ -157,11 +149,11 @@ void leave({
   required String inRoomName,
 }) {
   showPleaseWait();
-  _io.sendMessage(
-      'leave', '''{ 'userName': $inUserName, 'roomName': $inRoomName }''',
-      (inData) {
-    Map<String, dynamic> response = json.decode(inData);
-    debugPrint('## Connector.listUsers(): callback: response = $response');
+  socket.emitWithAck('leave', {
+    'userName': inUserName,
+    'roomName': inRoomName,
+  }, ack: (inData) {
+    debugPrint('## Connector.listUsers(): callback: response = $inData');
     hidePleaseWait();
     inCallback();
   });
@@ -169,10 +161,9 @@ void leave({
 
 void listUsers(final Function inCallback) {
   showPleaseWait();
-  _io.sendMessage('listUsers', '{}', (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('listUsers', '{}', ack: (inData) {
     hidePleaseWait();
-    inCallback(response);
+    inCallback(inData);
   });
 }
 
@@ -183,9 +174,11 @@ void invite({
   required String inRoomName,
 }) {
   showPleaseWait();
-  _io.sendMessage('invite',
-      '''{ 'userName': $inUserName, 'roomName': $inRoomName, 'inviterName': $inInviterName }''',
-      (inData) {
+  socket.emitWithAck('invite', {
+    'inviterName': inInviterName,
+    'roomName': inRoomName,
+    'userName': inUserName,
+  }, ack: (inData) {
     hidePleaseWait();
     inCallback();
   });
@@ -198,18 +191,19 @@ void post({
   required String inMessage,
 }) {
   showPleaseWait();
-  _io.sendMessage('post',
-      '''{ 'userName': $inUserName, 'roomName': $inRoomName, 'message': $inMessage }''',
-      (inData) {
-    Map<String, dynamic> response = json.decode(inData);
+  socket.emitWithAck('post', {
+    'userName': inUserName,
+    'roomName': inRoomName,
+    'message': inMessage
+  }, ack: (inData) {
     hidePleaseWait();
-    inCallback(response['status']);
+    inCallback(inData['status']);
   });
 }
 
 void close(final String inRoomName, final Function inCallback) {
   showPleaseWait();
-  _io.sendMessage('close', '''{ 'roomName': $inRoomName }''', (inData) {
+  socket.emitWithAck('close', {'roomName': inRoomName}, ack: (inData) {
     hidePleaseWait();
     inCallback();
   });
@@ -221,9 +215,10 @@ void kick({
   required String inRoomName,
 }) {
   showPleaseWait();
-  _io.sendMessage(
-      'kick', '''{ 'userName': $inUserName', 'roomName': $inRoomName }''',
-      (inData) {
+  socket.emitWithAck('kick', {
+    'userName': inUserName,
+    'roomName': inRoomName,
+  }, ack: (inData) {
     hidePleaseWait();
     inCallback();
   });
