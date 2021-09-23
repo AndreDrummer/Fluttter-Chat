@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat/core/model/model.dart';
+import 'package:flutter_chat/core/routes/app_routes.dart';
 import 'package:flutter_chat/core/utils/ui_utils/login_dialog.dart';
 import 'package:flutter_chat/features/home/home.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +44,7 @@ class FlutterChat extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      routes: AppRoutes.routes,
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
         body: FlutterChatMain(),
